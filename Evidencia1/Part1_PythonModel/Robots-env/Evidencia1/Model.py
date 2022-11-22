@@ -20,7 +20,16 @@ def show_agent_moves(model):
             tot_steps.append(a.personal_steps)
     return sum(tot_steps)
 
-def show_agent_ordered_boxes(model):
+# Cajas ordenadas por agente
+def show_agent_boxes(model):
+    tot_boxes = []
+    for a in model.schedule.agents:
+        if a.unique_id < 6:
+            tot_boxes.append(a.boxes_delivered)
+    return tot_boxes
+
+# Cajas ordenadas
+def show_agent_ordered_boxes(model): 
     tot_boxes = []
     for a in model.schedule.agents:
         if a.unique_id < 6:
@@ -54,10 +63,12 @@ class OrderingRobotsModel(mesa.Model):
 
         # Creamos una lista con coordenadas únicas para los estantes
         for i in range (2, 11):
-            # shelf_coord.append((3, i))
-            # shelf_coord.append((9, i))
-            self.shelf_coord.append((i, 3))
-            self.shelf_coord.append((i, 9))
+            if i == 4 or i == 8:
+                pass
+            else:
+                self.shelf_coord.append((i, 3))
+                self.shelf_coord.append((i, 6))
+                self.shelf_coord.append((i, 9))
         
         # Creamos una lista con coordenadas únicas para las cajas
         box_coord = []
@@ -79,17 +90,20 @@ class OrderingRobotsModel(mesa.Model):
 
         # Agregamos los agentes al mapa
         x = j = z = 0
+        # Robots: 0 - 5
         for i in range(1, self.num_agents + len(self.shelf_coord) + k + 1):
             if i <= self.num_agents:
                 r = Robot(i, self)
                 self.schedule.add(r)
                 self.grid.place_agent(r, robot_coord[x])
                 x += 1
+            # Estantes: 6 - 13
             elif i > self.num_agents and i <= self.num_agents + len(self.shelf_coord):
                 s = Shelf(100 + j, self)
                 self.schedule.add(s)
                 self.grid.place_agent(s, self.shelf_coord[j])
                 j += 1
+            # Cajas: 14 - 33
             else:
                 b = Box(10 + z, self)
                 self.schedule.add(b)
@@ -104,6 +118,11 @@ class OrderingRobotsModel(mesa.Model):
                 "Movimientos_Agentes": show_agent_moves,
                 "Cajas_Ordenadas": show_agent_ordered_boxes,
                 "Cajas_Desordenadas": show_unordered_boxes,
+                "Robot1": lambda m: show_agent_boxes(m)[0],
+                "Robot2": lambda m: show_agent_boxes(m)[1],
+                "Robot3": lambda m: show_agent_boxes(m)[2],
+                "Robot4": lambda m: show_agent_boxes(m)[3],
+                "Robot5": lambda m: show_agent_boxes(m)[4],
             },
         )
 
@@ -114,13 +133,13 @@ class OrderingRobotsModel(mesa.Model):
         self.datacollector.collect(self)
         self.schedule.step()
         
-        #Debemos checar el porcentaje de cajas ordenadas (25%)
+        # ebemos checar el porcentaje de cajas ordenadas (25%)
         self.percentage = show_agent_ordered_boxes(self) * 100 / self.total_boxes
-        print("Cajas totales: " + str (self.total_boxes))
+        print("Total de cajas al inicio: " + str (self.total_boxes))
         print("Ordenados: "  + str (show_agent_ordered_boxes(self)))
         print("Desordenados: "  + str (show_unordered_boxes(self)))
         print("Porcentaje ordenado: " + str(self.percentage))
-        if self.percentage >= 25:
+        if self.percentage >= 75:
             self.running = False
     
     def run_model(self):
@@ -172,7 +191,7 @@ sns.scatterplot(
     data=grouped_iterations,
     x="iteration", y="Step",
 )
-plt.title('Tiempo para apilar las cajas (25%)')
+plt.title('Tiempo para apilar las cajas (75%)')
 plt.xlabel('Iteraciones')
 plt.ylabel('Steps')
 plt.show()

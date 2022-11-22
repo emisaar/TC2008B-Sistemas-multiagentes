@@ -238,12 +238,13 @@ class Robot(mesa.Agent):
     
     def updateStackBox(self, x, y):
         for agent in self.model.schedule.agents:
-            if agent.unique_id >= 50 and agent.unique_id <= 53 and agent.pos == (x, y):
+            if agent.unique_id >= 50 and agent.unique_id <= 53 and agent.pos == (x, y) and agent.isFull == False:
                 agent.box_counting += 1
+                print("PILAAAAA", agent.unique_id, "Cajas: ", agent.box_counting)
                 return
     
     def checkStackBoxState(self):
         for agent in self.model.schedule.agents:
             if agent.unique_id >= 50 and agent.unique_id <= 53 and agent.box_counting >= 5:
-                agent.isFull = False
+                agent.isFull = True
         

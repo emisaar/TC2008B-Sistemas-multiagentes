@@ -31,6 +31,17 @@ chart_agents_moves = ChartModule([{
     canvas_height=40,
     canvas_width=80)
 
+# Chart of each time each agent cleans
+chart_agents_boxes = mesa.visualization.ChartModule(
+    [
+        {"Label": "Robot1", "Color": "Black"},
+        {"Label": "Robot2", "Color": "Blue"},
+        {"Label": "Robot3", "Color": "Red"},
+        {"Label": "Robot4", "Color": "Green"},
+        {"Label": "Robot5", "Color": "Yellow"},
+    ],
+    data_collector_name='datacollector')
+
 # Cajas ordenadas vs cajas desordenadas (%)
 chart_ordered_boxes = PieChartModule([
     {'Label': 'Cajas_Ordenadas', 'Color': 'Green'},
@@ -46,7 +57,7 @@ model_params = {"N": 5, "width": 13, "height": 13}
 # Elementos que se mostrarán en el servidor
 server = ModularServer(
     OrderingRobotsModel,
-    [grid, chart_agents_moves, chart_ordered_boxes],
+    [grid, chart_agents_boxes, chart_agents_moves, chart_ordered_boxes],
     "Ordering-Robots Model",
     model_params
 )
