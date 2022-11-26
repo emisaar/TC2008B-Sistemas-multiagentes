@@ -11,7 +11,7 @@ from Agents import *
 
 
 class StreetModel(Model):
-    def __init__(self, N, width, height):
+    def __init__(self, N = 8, width = 21, height = 21):
         self.num_agents = N
         self.running = True
         self.neighbors = False
@@ -24,6 +24,24 @@ class StreetModel(Model):
         self.grid = MultiGrid(width, height, True)
         self.schedule = RandomActivation(self)
         self.running = True
+
+        # Colocamos los carros
+        coord_traffic = [(7, 9), (13, 11), (11, 7), (9, 13)]
+        coord_cars = [(9, 15), (18, 11), (11, 2), (1, 9)]
+        coord_cars_dir = [4, 2, 3, 1]
+        for j in range(0, len(coord_cars)):
+            car = Car(j + len(coord_traffic) + 1, self, coord_cars_dir[j])
+            self.schedule.add(car)
+            self.grid.place_agent(car, coord_cars[j])
+
+        # Carros para mejorar la simulación
+        c9 = Car(9, self, 4)
+        self.schedule.add(c9)
+        self.grid.place_agent(c9, (9, 5))
+        # self.grid.place_agent(c9, (9, 18))
+        c10 = Car(10, self, 1)
+        self.schedule.add(c10)
+        self.grid.place_agent(c10, (2, 9))
 
         # Le damos color al grid
         id_cont = 1
@@ -44,28 +62,11 @@ class StreetModel(Model):
                 id_cont += 1
 
         # Colocamos los semáforos
-        coord_traffic = [(7, 9), (13, 11), (11, 7), (9, 13)]
+        # coord_traffic = [(7, 9), (13, 11), (11, 7), (9, 13)]
         for i in range(0, len(coord_traffic)):
             traffic_light = TrafficLight(i + 1, self, 0)
             self.schedule.add(traffic_light)
             self.grid.place_agent(traffic_light, coord_traffic[i])
-
-        # Colocamos los carros
-        coord_cars = [(9, 15), (18, 11), (11, 2), (1, 9)]
-        coord_cars_dir = [4, 2, 3, 1]
-        for j in range(0, len(coord_cars)):
-            car = Car(j + len(coord_traffic) + 1, self, coord_cars_dir[j])
-            self.schedule.add(car)
-            self.grid.place_agent(car, coord_cars[j])
-
-        # Carros para mejorar la simulación
-        c9 = Car(9, self, 4)
-        self.schedule.add(c9)
-        self.grid.place_agent(c9, (9, 5))
-        # self.grid.place_agent(c9, (9, 18))
-        c10 = Car(10, self, 1)
-        self.schedule.add(c10)
-        self.grid.place_agent(c10, (2, 9))
 
         # Carros para ejemplo de "colisión"
         # c15 = Car(15, self, 4)
@@ -92,6 +93,22 @@ class StreetModel(Model):
     def step(self):
         self.datacollector.collect(self)
         self.schedule.step()
+
+        positions = []
+        for i in range(self.num_agents):
+            vehicle_id = self.schedule.agents[i].unique_id
+            xy = self.schedule.agents[i].pos
+            p = [
+                vehicle_id,
+                 xy[0],
+                 20,
+                 xy[1]
+                ]
+            positions.append(p)
+        
+        print(positions)
+        return positions
+
 
     def run_model(self):
         while self.running:

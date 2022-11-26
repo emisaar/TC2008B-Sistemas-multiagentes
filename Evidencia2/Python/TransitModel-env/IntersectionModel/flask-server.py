@@ -1,0 +1,53 @@
+# TC2008B. Sistemas Multiagentes y Gráficas Computacionales
+# Python flask server to interact with Unity. Based on the code provided by Sergio Ruiz.
+# Octavio Navarro. November 2022
+
+from flask import Flask, request, jsonify
+# from boids.boid import Boid
+from StreetModel import StreetModel
+import json
+
+model = StreetModel()
+
+# def updatePositions(flock):
+#     positions = []
+#     for boid in flock:
+#         boid.apply_behaviour(flock)
+#         boid.update()
+#         boid.edges()
+#         positions.append((boid.id, boid.position))
+#     return positions
+
+def positionsToJSON(positions):
+    posDICT = []
+    for p in positions:
+        pos = {
+            "vehicleId" : p[0],
+            "x" : p[1],
+            "y" : p[2],
+            "z" : p[3]
+        }
+        posDICT.append(pos)
+    return json.dumps(posDICT)
+
+# Size of the board:
+width = 21
+height = 21
+
+# Set the number of agents here:
+# flock = []
+
+app = Flask("IntersectionModel")
+
+@app.route("/")
+def root():
+    return jsonify({'message':'Hello World!'})
+
+@app.route('/init', methods=['POST', 'GET'])
+def model_run():
+    positions = model.step()
+    ans = "{ \"positions\": " + positionsToJSON(positions) + " }"
+    return ans
+
+if __name__=='__main__':
+    app.run(host="localhost", port=8585, debug=True)
