@@ -101,7 +101,7 @@ class StreetModel(Model):
             p = [
                 vehicle_id,
                  xy[0],
-                 0,
+                 -1,
                  xy[1]
                 ]
             positions.append(p)
