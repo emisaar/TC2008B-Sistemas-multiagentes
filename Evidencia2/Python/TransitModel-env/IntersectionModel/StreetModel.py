@@ -11,7 +11,7 @@ from Agents import *
 
 
 class StreetModel(Model):
-    def __init__(self, N = 8, width = 21, height = 21):
+    def __init__(self, N = 6, width = 21, height = 21):
         self.num_agents = N
         self.running = True
         self.neighbors = False
@@ -101,7 +101,7 @@ class StreetModel(Model):
             p = [
                 vehicle_id,
                  xy[0],
-                 20,
+                 0,
                  xy[1]
                 ]
             positions.append(p)

@@ -39,7 +39,7 @@ height = 21
 
 app = Flask("IntersectionModel")
 
-@app.route("/")
+@app.route('/')
 def root():
     return jsonify({'message':'Hello World!'})
 
