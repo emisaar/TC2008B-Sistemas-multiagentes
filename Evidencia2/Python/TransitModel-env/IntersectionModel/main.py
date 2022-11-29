@@ -64,40 +64,39 @@ grid = CanvasGrid(
     600
 )
 
-# Contador de coches que pasan
-chart_counting_cars = ChartModule([{
-    'Label': 'Counting_Cars',
-    'Color': 'Black'}],
-    data_collector_name='datacollector',
-    canvas_height=40,
-    canvas_width=80)
+# # Contador de coches que pasan
+# chart_counting_cars = ChartModule([{
+#     'Label': 'Counting_Cars',
+#     'Color': 'Black'}],
+#     data_collector_name='datacollector',
+#     canvas_height=40,
+#     canvas_width=80)
 
-# Accidentes reportados
-chart_car_crashes = ChartModule([{
-    'Label': 'Car_Crashes',
-    'Color': 'Black'}],
-    data_collector_name='datacollector',
-    canvas_height=40,
-    canvas_width=80)
+# # Accidentes reportados
+# chart_car_crashes = ChartModule([{
+#     'Label': 'Car_Crashes',
+#     'Color': 'Black'}],
+#     data_collector_name='datacollector',
+#     canvas_height=40,
+#     canvas_width=80)
 
-# Tiempo máximo de espera
-chart_max_time = ChartModule([{
-    'Label': 'Max_Waiting_Time',
-    'Color': 'Black'}],
-    data_collector_name='datacollector',
-    canvas_height=40,
-    canvas_width=80)
+# # Tiempo máximo de espera
+# chart_max_time = ChartModule([{
+#     'Label': 'Max_Waiting_Time',
+#     'Color': 'Black'}],
+#     data_collector_name='datacollector',
+#     canvas_height=40,
+#     canvas_width=80)
 
-# Inicializamos el Modelo
-#model_params = {"N": 4, "width": 21, "height": 21}
-model_params = {"N": 6, "width": 21, "height": 21, "collisions": bool_colls}
+# # Inicializamos el Modelo
+# #model_params = {"N": 4, "width": 21, "height": 21}
+# model_params = {"N": 6, "width": 21, "height": 21, "collisions": bool_colls}
 
 # Elementos que se mostrarán en el servidor
 server = ModularServer(
     StreetModel,
-    [grid, chart_counting_cars, chart_car_crashes, chart_max_time],
+    [grid],
     "Intersection Model",
-    model_params
 )
 
 server.port = 8521

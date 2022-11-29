@@ -10,22 +10,6 @@ from mesa import Agent
 # Semilla para generar números aleatorios
 seed(1)
 
-
-# Calculamos la cantidad de choques en el modelo
-def compute_car_crashes(model):
-    return int(model.tot_crashes/2)
-
-
-# Calculamos la cantidad de carros que pasan por los semáforos
-def compute_counting_cars(model):
-    return model.counting_cars
-
-
-# Calculamos el tiempo máximo de espera de un coche
-def compute_max_waiting_time(model):
-    return model.max_waiting_time
-
-
 # Usaremos este agente para colorear el grid
 class Color(Agent):
     def __init__(self, unique_id, model):

@@ -30,6 +30,16 @@ def positionsToJSON(positions):
         posDICT.append(pos)
     return json.dumps(posDICT)
 
+def lightsToJSON(lights):
+    lightsDICT = []
+    for l in lights:
+        s = {
+            "lightId" : l[0],
+            "state" : l[1]
+        }
+        lightsDICT.append(s)
+    return json.dumps(lightsDICT)
+
 # Size of the board:
 width = 21
 height = 21
@@ -45,8 +55,8 @@ def root():
 
 @app.route('/init', methods=['POST', 'GET'])
 def model_run():
-    positions = model.step()
-    ans = "{ \"positions\": " + positionsToJSON(positions) + " }"
+    [positions, lights] = model.step()
+    ans = "{ \"positions\": " + positionsToJSON(positions) + ",\"lights\": " + lightsToJSON(lights) + " }"
     return ans
 
 if __name__=='__main__':
