@@ -1,12 +1,25 @@
 # Alejandro Díaz Villagómez - A01276769
-# Fecha - 18/Noviembre/2022
-# Simulación de una intersección
+# Emiliano Saucedo Arriola - A01659258
+# Alfonso Pineda Cedillo - A01660394
+# Fecha - 29/Noviembre/2022
+# Evidencia 2 - Simulación de una intersección
 
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule
 
 #from CleaningModel import CleaningModel
 from StreetModel import *
+
+bool_colls = False
+
+while True:
+    colls = str(input("¿Quieres considerar choques? (y/n): "))
+    if colls == "y":
+        bool_colls = True
+        break
+
+    elif colls == "n":
+        break
 
 
 def agent_portrayal(agent):
@@ -67,14 +80,22 @@ chart_car_crashes = ChartModule([{
     canvas_height=40,
     canvas_width=80)
 
+# Tiempo máximo de espera
+chart_max_time = ChartModule([{
+    'Label': 'Max_Waiting_Time',
+    'Color': 'Black'}],
+    data_collector_name='datacollector',
+    canvas_height=40,
+    canvas_width=80)
+
 # Inicializamos el Modelo
 #model_params = {"N": 4, "width": 21, "height": 21}
-model_params = {"N": 6, "width": 21, "height": 21}
+model_params = {"N": 6, "width": 21, "height": 21, "collisions": bool_colls}
 
 # Elementos que se mostrarán en el servidor
 server = ModularServer(
     StreetModel,
-    [grid, chart_counting_cars, chart_car_crashes],
+    [grid, chart_counting_cars, chart_car_crashes, chart_max_time],
     "Intersection Model",
     model_params
 )
