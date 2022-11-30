@@ -49,7 +49,7 @@ class Car(Agent):
             if x - 1 < 0:
                 new_position = (x, y + 1)
                 self.mov_dir = 3
-            elif y == 0 and x == 11 and num == 1:
+            elif y == 0 and x == 10 and num == 1:
                 new_position = (x, y + 1)
                 self.mov_dir = 3
             else:
@@ -69,7 +69,7 @@ class Car(Agent):
             if y - 1 < 0:
                 new_position = (x - 1, y)
                 self.mov_dir = 2
-            elif x == 20 and y == 11 and num == 1:
+            elif x == 20 and y == 10 and num == 1:
                 new_position = (x - 1, y)
                 self.mov_dir = 2
             else:
@@ -113,7 +113,6 @@ class Car(Agent):
             # Hubo un choque, es necesario reportarlo
             if len(noRepeatingElements) != len(list_a):
                 self.model.accident = True
-
 
 # Agente 2 - Semáforos
 class TrafficLight(Agent):
