@@ -1,0 +1,4 @@
+---
+applications:
+ - name: agents-server
+   random-route: true

@@ -127,7 +127,7 @@ class TrafficLight(Agent):
         # El semáforo está en rojo, hay que checar el estado de los demás semáforos
         if case == 0:
             self.state = 2
-            self.waiting_time = 6
+            self.waiting_time = 8
             self.pass_car = True
 
         # El semáforo está en amarillo y no se ha acabado el tiempo (Verde)

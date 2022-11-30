@@ -7,11 +7,6 @@
 from mesa import Model
 from mesa.space import MultiGrid
 from mesa.time import RandomActivation
-from mesa.datacollection import DataCollector
-from mesa import batch_run
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 from Agents import *
 

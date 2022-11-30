@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify
 # from boids.boid import Boid
 from StreetModel import StreetModel
 import json
+import os
 
 model = StreetModel()
 
@@ -47,7 +48,8 @@ height = 21
 # Set the number of agents here:
 # flock = []
 
-app = Flask("IntersectionModel")
+app = Flask("Intersection Model", static_url_path='')
+port=int(os.getenv('PORT',8000))
 
 @app.route('/')
 def root():
@@ -60,4 +62,4 @@ def model_run():
     return ans
 
 if __name__=='__main__':
-    app.run(host="localhost", port=8585, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=True)
