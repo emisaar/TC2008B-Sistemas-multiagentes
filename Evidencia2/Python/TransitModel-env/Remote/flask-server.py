@@ -1,6 +1,10 @@
-# TC2008B. Sistemas Multiagentes y Gráficas Computacionales
-# Python flask server to interact with Unity. Based on the code provided by Sergio Ruiz.
-# Octavio Navarro. November 2022
+# Alejandro Díaz Villagómez - A01276769
+# Emiliano Saucedo Arriola - A01659258
+# Alfonso Pineda Cedillo - A01660394
+# Fecha - 30/Noviembre/2022
+# Evidencia 2 - Simulación de una intersección
+
+# Servidor Flask para interactuar con Unity
 
 from flask import Flask, request, jsonify
 # from boids.boid import Boid
@@ -53,7 +57,7 @@ port=int(os.getenv('PORT',8000))
 
 @app.route('/')
 def root():
-    return jsonify({'message':'Hello World!'})
+    return jsonify({'message':'Working...'})
 
 @app.route('/init', methods=['POST', 'GET'])
 def model_run():

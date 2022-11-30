@@ -1,7 +1,7 @@
 # Alejandro Díaz Villagómez - A01276769
 # Emiliano Saucedo Arriola - A01659258
 # Alfonso Pineda Cedillo - A01660394
-# Fecha - 29/Noviembre/2022
+# Fecha - 30/Noviembre/2022
 # Evidencia 2 - Simulación de una intersección
 
 from mesa import Model
