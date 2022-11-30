@@ -2,7 +2,7 @@
 # Emiliano Saucedo Arriola - A01659258
 # Alfonso Pineda Cedillo - A01660394
 # Fecha - 29/Noviembre/2022
-# Evidencia 2 - Simulación de una intersección
+# Evidencia 2 - Simulación de una intersección - dummy
 
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule
@@ -88,6 +88,22 @@ chart_max_time = ChartModule([{
     canvas_height=40,
     canvas_width=80)
 
+# Tiempo promedio de espera
+chart_mean_time = ChartModule([{
+    'Label': 'Mean_Waiting_Time',
+    'Color': 'Black'}],
+    data_collector_name='datacollector',
+    canvas_height=40,
+    canvas_width=80)
+
+# Tiempo promedio de espera por ejecución
+chart_sim_mean_time = ChartModule([{
+    'Label': 'Simulation_Mean_Waiting_Time',
+    'Color': 'Black'}],
+    data_collector_name='datacollector',
+    canvas_height=40,
+    canvas_width=80)
+
 # Inicializamos el Modelo
 #model_params = {"N": 4, "width": 21, "height": 21}
 model_params = {"N": 6, "width": 21, "height": 21, "collisions": bool_colls}
@@ -95,7 +111,8 @@ model_params = {"N": 6, "width": 21, "height": 21, "collisions": bool_colls}
 # Elementos que se mostrarán en el servidor
 server = ModularServer(
     StreetModel,
-    [grid, chart_counting_cars, chart_car_crashes, chart_max_time],
+    [grid, chart_counting_cars, chart_car_crashes,
+        chart_max_time, chart_mean_time, chart_sim_mean_time],
     "Intersection Model",
     model_params
 )

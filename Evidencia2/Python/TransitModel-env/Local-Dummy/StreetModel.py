@@ -2,7 +2,7 @@
 # Emiliano Saucedo Arriola - A01659258
 # Alfonso Pineda Cedillo - A01660394
 # Fecha - 29/Noviembre/2022
-# Evidencia 2 - Simulación de una intersección
+# Evidencia 2 - Simulación de una intersección - dummy
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -26,7 +26,11 @@ class StreetModel(Model):
         self.counting_cars = 0
         self.steps = 0
         self.max_waiting_time = 0
+        self.mean_waiting_time = 0
+        self.max_mean_waiting_time = 0
         self.accept_collisions = collisions
+        self.traffic_lights_id = [2, 3, 4]
+        self.id_traffic = 1
 
         # Espacio físico para los agentes
         # Permitimos que se salgan del mapa
@@ -55,26 +59,21 @@ class StreetModel(Model):
         # Colocamos los semáforos
         coord_traffic = [(7, 9), (13, 10), (10, 7), (9, 13)]
         for i in range(0, len(coord_traffic)):
-            traffic_light = TrafficLight(i + 1, self, 0)
+            if i == 0:
+                traffic_light = TrafficLight(i + 1, self, 2)
+            else:
+                traffic_light = TrafficLight(i + 1, self, 0)
             self.schedule.add(traffic_light)
             self.grid.place_agent(traffic_light, coord_traffic[i])
 
         # Colocamos los carros
-        coord_cars = [(9, 15), (18, 10), (10, 2), (1, 9)]
-        coord_cars_dir = [4, 2, 3, 1]
+        coord_cars = [(9, 15), (18, 10), (10, 2), (0, 9), (9, 5),
+                      (2, 9), (19, 0), (2, 20), (15, 20), (11, 18)]
+        coord_cars_dir = [4, 2, 3, 1, 4, 1, 2, 1, 1, 3]
         for j in range(0, len(coord_cars)):
             car = Car(j + len(coord_traffic) + 1, self, coord_cars_dir[j])
             self.schedule.add(car)
             self.grid.place_agent(car, coord_cars[j])
-
-        # Carros para mejorar la simulación
-        c9 = Car(9, self, 4)
-        self.schedule.add(c9)
-        self.grid.place_agent(c9, (9, 5))
-        # self.grid.place_agent(c9, (9, 18))
-        c10 = Car(10, self, 1)
-        self.schedule.add(c10)
-        self.grid.place_agent(c10, (2, 9))
 
         # Carros para ejemplo de "colisión"
         # c15 = Car(15, self, 4)
@@ -89,26 +88,37 @@ class StreetModel(Model):
             model_reporters={
                 "Car_Crashes": compute_car_crashes,
                 "Counting_Cars": compute_counting_cars,
-                "Max_Waiting_Time": compute_max_waiting_time
+                "Max_Waiting_Time": compute_max_waiting_time,
+                "Mean_Waiting_Time": compute_mean_waiting_time,
+                "Simulation_Mean_Waiting_Time": compute_simulation_mean_waiting_time
             },
         )
 
-    def trafficLightIsActive(self):
-        for agent in self.schedule.agents:
-            if agent.unique_id < 5 and agent.pass_car == True:
-                return True
-        return False
-
-    def get_max_waiting_time(self):
+    def get_mean_max_waiting_time(self):
+        tot_cars = tot_waiting = 0
         for agent in self.schedule.agents:
             if agent.unique_id > 4 and agent.unique_id < 50 and agent.waiting > self.max_waiting_time:
                 self.max_waiting_time = agent.waiting
 
+            if agent.unique_id > 4 and agent.unique_id < 50:
+                tot_cars += 1
+                tot_waiting += agent.waiting
+        self.mean_waiting_time = int(tot_waiting/tot_cars)
+        if self.mean_waiting_time > self.max_mean_waiting_time:
+            self.max_mean_waiting_time = self.mean_waiting_time
+
     def step(self):
         self.steps += 1
-        self.get_max_waiting_time()
+        self.get_mean_max_waiting_time()
         self.datacollector.collect(self)
         self.schedule.step()
+
+        if self.steps % 5 == 0:
+            if self.traffic_lights_id:
+                self.id_traffic = self.traffic_lights_id.pop(0)
+            else:
+                self.traffic_lights_id = [2, 3, 4]
+                self.id_traffic = 1
 
         if self.accident:
             self.tot_crashes += 0.5
@@ -132,7 +142,7 @@ model_params = {"N": 6, "width": 21, "height": 21, "collisions": True}
 results = batch_run(
     StreetModel,
     parameters=model_params,
-    iterations=50,
+    iterations=100,
     number_processes=1,
     data_collection_period=1,
     display_progress=False,
@@ -144,7 +154,7 @@ results_df = pd.DataFrame(results)
 
 # Agrupamos la información y obtenemos solo los últimos valores
 grouped_iterations = pd.DataFrame(
-    columns=['iteration', 'N', 'Car_Crashes', 'Counting_Cars', 'Max_Waiting_Time'])
+    columns=['iteration', 'N', 'Car_Crashes', 'Counting_Cars', 'Max_Waiting_Time', 'Simulation_Mean_Waiting_Time'])
 
 for it, group in results_df.groupby(["iteration"]):
     grouped_iterations = grouped_iterations.append(
@@ -152,7 +162,8 @@ for it, group in results_df.groupby(["iteration"]):
          'N': group.iloc[-1].N,
          'Car_Crashes': group.iloc[-1].Car_Crashes,
          'Counting_Cars': group.iloc[-1].Counting_Cars,
-         'Max_Waiting_Time': group.iloc[-1].Max_Waiting_Time},
+         'Max_Waiting_Time': group.iloc[-1].Max_Waiting_Time,
+         'Simulation_Mean_Waiting_Time': group.iloc[-1].Simulation_Mean_Waiting_Time},
         ignore_index=True)
 #print(grouped_iterations.to_string(index=False, max_rows=25))
 # print(grouped_iterations.to_string(index=False))
@@ -175,7 +186,7 @@ sns.scatterplot(
     data=grouped_iterations,
     x="iteration", y="Counting_Cars",
 )
-plt.title('Coches que pasaron por la intersección')
+plt.title('Flujo de coches en la intersección')
 plt.xlabel('Iteraciones')
 plt.ylabel('Cantidad de automóviles')
 plt.show()
@@ -189,4 +200,15 @@ sns.scatterplot(
 plt.title('Tiempo máximo de espera registrado')
 plt.xlabel('Iteraciones')
 plt.ylabel('Tiempo de espera máxima')
+plt.show()
+
+# Hacemos una gráfica que representa el tiempo máximo de espera registrado
+sns.set_theme()
+sns.scatterplot(
+    data=grouped_iterations,
+    x="iteration", y="Simulation_Mean_Waiting_Time",
+)
+plt.title('Tiempo promedio de espera registrado')
+plt.xlabel('Iteraciones')
+plt.ylabel('Tiempo promedio de espera')
 plt.show()

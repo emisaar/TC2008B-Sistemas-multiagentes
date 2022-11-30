@@ -2,7 +2,7 @@
 # Emiliano Saucedo Arriola - A01659258
 # Alfonso Pineda Cedillo - A01660394
 # Fecha - 29/Noviembre/2022
-# Evidencia 2 - Simulación de una intersección
+# Evidencia 2 - Simulación de una intersección - dummy
 
 from random import randint, seed
 from mesa import Agent
@@ -24,6 +24,16 @@ def compute_counting_cars(model):
 # Calculamos el tiempo máximo de espera de un coche
 def compute_max_waiting_time(model):
     return model.max_waiting_time
+
+
+# Calculamos el tiempo promedio de espera de los coches
+def compute_mean_waiting_time(model):
+    return model.mean_waiting_time
+
+
+# Calculamos el tiempo promedio máximo de espera (por ejecución)
+def compute_simulation_mean_waiting_time(model):
+    return model.max_mean_waiting_time
 
 
 # Usaremos este agente para colorear el grid
@@ -94,22 +104,15 @@ class Car(Agent):
 
         if len(cellmates) > 1:
             for c in cellmates:
-                # El semáforo vecino está en rojo - no hay semáforo activo
-                if c.unique_id < 5 and c.pass_car == False and c.waiting_time <= 0 and not self.model.trafficLightIsActive():
-                    self.waiting = 0
-                    c.change_traffic_light(0)
+                # El semáforo vecino está en rojo - no se puede pasar
+                if c.unique_id < 5 and c.pass_car == False:
+                    self.waiting += 1
 
-                # Sigue activo el semáforo
-                elif c.unique_id < 5 and c.pass_car == True and c.waiting_time > 0:
+                # El semáforo está en verde o amarillo - puedo pasar
+                elif c.unique_id < 5 and c.pass_car == True:
                     self.waiting = 0
-                    c.change_traffic_light(1)
                     self.model.grid.move_agent(self, new_position)
                     self.model.counting_cars += 1
-
-                # El semáforo vecino está en rojo - hay semáforo activo
-                elif c.unique_id < 5 and c.pass_car == False and c.waiting_time <= 0 and self.model.trafficLightIsActive():
-                    self.waiting += 1
-                    c.change_traffic_light(2)
 
                 elif self.model.accept_collisions and c.unique_id > 4 and c.unique_id < 100:
                     self.model.grid.move_agent(self, new_position)
@@ -138,26 +141,15 @@ class TrafficLight(Agent):
         # Hay tres estados: rojo(0), amarillo(1) y verde(2)
         self.state = color
         self.pass_car = False
-        self.waiting_time = 0
 
-    def change_traffic_light(self, case):
-        # El semáforo está en rojo, hay que checar el estado de los demás semáforos
-        if case == 0:
-            self.state = 2
-            self.waiting_time = 6
-            self.pass_car = True
-
-        # El semáforo está en amarillo y no se ha acabado el tiempo (Verde)
-        elif case == 1:
-            self.state = 1
-
-        # El semáforo vecino está en rojo - hay semáforo activo
-        elif case == 2:
-            pass
+    def reset_traffic_light(self):
+        self.state = 0
+        self.pass_car = False
 
     def step(self):
-        if self.waiting_time > 0:
-            self.waiting_time -= 1
-        if self.waiting_time == 0:
-            self.pass_car = False
-            self.state = 0
+        if self.model.steps % 5 == 0:
+            self.reset_traffic_light()
+
+            if self.model.id_traffic == self.unique_id:
+                self.state = 2
+                self.pass_car = True

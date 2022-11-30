@@ -137,7 +137,7 @@ model_params = {"N": 6, "width": 21, "height": 21, "collisions": True}
 results = batch_run(
     StreetModel,
     parameters=model_params,
-    iterations=5,
+    iterations=100,
     number_processes=1,
     data_collection_period=1,
     display_progress=False,
